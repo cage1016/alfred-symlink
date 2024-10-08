@@ -7,9 +7,51 @@
 	<key>category</key>
 	<string>Tools</string>
 	<key>connections</key>
-	<dict/>
+	<dict>
+		<key>0FD10229-36E1-4F12-866C-24D97540B0B2</key>
+		<array/>
+		<key>5D5CE2E5-BD9B-4AF6-A75D-F0188FD4E982</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>0FD10229-36E1-4F12-866C-24D97540B0B2</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>6BE6DAEA-DF86-45A6-BBA1-EC93AA947886</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>EE8CFDBE-66C2-4D84-A773-261844C33FD6</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>EE8CFDBE-66C2-4D84-A773-261844C33FD6</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>5D5CE2E5-BD9B-4AF6-A75D-F0188FD4E982</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+	</dict>
 	<key>createdby</key>
-	<string></string>
+	<string>KAI CHU CHUNG</string>
 	<key>description</key>
 	<string>Make symlink for Alfred with ease</string>
 	<key>disabled</key>
@@ -17,11 +59,230 @@
 	<key>name</key>
 	<string>Alfred Symlink</string>
 	<key>objects</key>
-	<array/>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>0</integer>
+				<key>keyword</key>
+				<string>sym</string>
+				<key>subtext</key>
+				<string>Makes a symbolic link in the same directory, renaming if necessary,</string>
+				<key>text</key>
+				<string>Make Symbolic Link</string>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.keyword</string>
+			<key>uid</key>
+			<string>6BE6DAEA-DF86-45A6-BBA1-EC93AA947886</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>68</integer>
+				<key>script</key>
+				<string>ObjC.import("stdlib")
+ObjC.import('AppKit')
+
+const App = Application.currentApplication();
+App.includeStandardAdditions = true;
+
+const appName = Application('System Events').applicationProcesses.where({ frontmost: true }).name()[0]
+let FinderPath;
+
+if (appName !== 'Finder' &amp;&amp; appName !== 'QSpace Pro') {
+    'You need put Finder or QSpace Pro as your frontmost app'
+} else {
+    switch (appName) {
+        case "QSpace Pro":
+            getFullFolderPath = (path) =&gt; {
+                // Import the necessary module
+                ObjC.import('Foundation');
+
+                // Convert the path to NSString
+                var nsPath = $(path);
+
+                // Create a file manager to check if the path is a directory
+                var fileManager = $.NSFileManager.defaultManager;
+                var isDirectory = Ref();
+
+                // Check if the path is a directory
+                fileManager.fileExistsAtPathIsDirectory(nsPath, isDirectory);
+
+                if (isDirectory[0]) {
+                    // If the path is a directory, return the path itself
+                    return ObjC.unwrap(nsPath);
+                } else {
+                    // If the path is a file, return the path of its parent directory
+                    var parentDirectory = nsPath.stringByDeletingLastPathComponent;
+                    return ObjC.unwrap(parentDirectory);
+                }
+            }
+
+            FinderPath = () =&gt; {
+                const QSpacePro = Application("QSpace Pro");
+                var selectedItems = QSpacePro.selectedItems();
+                if (selectedItems.length &gt; 0) {
+                    return getFullFolderPath(decodeURIComponent(selectedItems[0].urlstr()).slice(7))
+                } else {
+                    return decodeURIComponent(QSpacePro.rootItem.urlstr()).slice(7)
+                }
+            };
+            break;
+        case "Finder":
+            FinderPath = () =&gt;
+                decodeURI(
+                    Application(appName)
+                        .insertionLocation()
+                        .url()
+                        .replace(/^file:\/\//, '')
+                );
+            break;
+    }
+
+    FinderPath()
+}</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>7</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>5D5CE2E5-BD9B-4AF6-A75D-F0188FD4E982</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>script</key>
+				<string>TARGET_FOLDER="${1//$'\n'/}"
+
+# Get the target folder path from QSpace Pro or Finder
+# Verify that TARGET_FOLDER was retrieved
+if [ -z "$TARGET_FOLDER" ]; then
+  echo "Error: Neither QSpace Pro nor Finder is the frontmost application."
+  exit 1
+fi
+
+echo "The target folder is: $TARGET_FOLDER"
+
+# Ensure that at least one file is provided in {query}
+if [ -z "$1" ]; then
+  echo "No files specified to create symlinks for."
+  exit 1
+fi
+
+# Replace {query} with the list of files you want to process
+# For example, you can pass the files as arguments to the script
+# and use "$@" to loop over them
+for f in "$SOURCE_FOLDERS"
+do
+  # Check if the source file exists
+  if [ ! -e "$f" ]; then
+    echo "Source file '$f' does not exist."
+    continue
+  fi
+
+  # Get the basename of the file (filename without the path)
+  baseName=$(basename "$f")
+
+  fileSuffix="link"
+  fileNumber=0
+  linkName="$TARGET_FOLDER/$baseName $fileSuffix"
+
+  while [ -e "$linkName" ]; do
+    fileNumber=$((fileNumber + 1))
+    linkName="$TARGET_FOLDER/$baseName link $fileNumber"
+  done
+
+  ln -s "$f" "$linkName"
+  echo "Created symbolic link: '$linkName' -&gt; '$f'"
+done</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>11</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>0FD10229-36E1-4F12-866C-24D97540B0B2</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argument</key>
+				<string></string>
+				<key>passthroughargument</key>
+				<false/>
+				<key>variables</key>
+				<dict>
+					<key>SOURCE_FOLDERS</key>
+					<string>{query}</string>
+				</dict>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.utility.argument</string>
+			<key>uid</key>
+			<string>EE8CFDBE-66C2-4D84-A773-261844C33FD6</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+	</array>
 	<key>readme</key>
 	<string></string>
 	<key>uidata</key>
-	<dict/>
+	<dict>
+		<key>0FD10229-36E1-4F12-866C-24D97540B0B2</key>
+		<dict>
+			<key>xpos</key>
+			<real>460</real>
+			<key>ypos</key>
+			<real>150</real>
+		</dict>
+		<key>5D5CE2E5-BD9B-4AF6-A75D-F0188FD4E982</key>
+		<dict>
+			<key>xpos</key>
+			<real>270</real>
+			<key>ypos</key>
+			<real>150</real>
+		</dict>
+		<key>6BE6DAEA-DF86-45A6-BBA1-EC93AA947886</key>
+		<dict>
+			<key>xpos</key>
+			<real>30</real>
+			<key>ypos</key>
+			<real>150</real>
+		</dict>
+		<key>EE8CFDBE-66C2-4D84-A773-261844C33FD6</key>
+		<dict>
+			<key>xpos</key>
+			<real>190</real>
+			<key>ypos</key>
+			<real>180</real>
+		</dict>
+	</dict>
 	<key>userconfigurationconfig</key>
 	<array/>
 	<key>version</key>
