@@ -63,6 +63,71 @@
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>script</key>
+				<string>TARGET_FOLDER="${1//$'\n'/}"
+
+# Get the target folder path from QSpace Pro or Finder
+# Verify that TARGET_FOLDER was retrieved
+if [ -z "$TARGET_FOLDER" ]; then
+  echo "Error: Neither QSpace Pro nor Finder is the frontmost application."
+  exit 1
+fi
+
+echo "The target folder is: $TARGET_FOLDER"
+
+# Ensure that at least one file is provided in {query}
+if [ -z "$1" ]; then
+  echo "No files specified to create symlinks for."
+  exit 1
+fi
+
+# Replace {query} with the list of files you want to process
+# For example, you can pass the files as arguments to the script
+# and use "$@" to loop over them
+for f in "$SOURCE_FOLDERS"
+do
+  # Check if the source file exists
+  if [ ! -e "$f" ]; then
+    echo "Source file '$f' does not exist."
+    continue
+  fi
+
+  # Get the basename of the file (filename without the path)
+  baseName=$(basename "$f")
+
+  fileSuffix="link"
+  fileNumber=0
+  linkName="$TARGET_FOLDER/$baseName $fileSuffix"
+
+  while [ -e "$linkName" ]; do
+    fileNumber=$((fileNumber + 1))
+    linkName="$TARGET_FOLDER/$baseName link $fileNumber"
+  done
+
+  ln -s "$f" "$linkName"
+  echo "Created symbolic link: '$linkName' -&gt; '$f'"
+done</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>11</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>0FD10229-36E1-4F12-866C-24D97540B0B2</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
 				<key>argumenttype</key>
 				<integer>0</integer>
 				<key>keyword</key>
@@ -167,71 +232,6 @@ if (appName !== 'Finder' &amp;&amp; appName !== 'QSpace Pro') {
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>concurrently</key>
-				<false/>
-				<key>escaping</key>
-				<integer>102</integer>
-				<key>script</key>
-				<string>TARGET_FOLDER="${1//$'\n'/}"
-
-# Get the target folder path from QSpace Pro or Finder
-# Verify that TARGET_FOLDER was retrieved
-if [ -z "$TARGET_FOLDER" ]; then
-  echo "Error: Neither QSpace Pro nor Finder is the frontmost application."
-  exit 1
-fi
-
-echo "The target folder is: $TARGET_FOLDER"
-
-# Ensure that at least one file is provided in {query}
-if [ -z "$1" ]; then
-  echo "No files specified to create symlinks for."
-  exit 1
-fi
-
-# Replace {query} with the list of files you want to process
-# For example, you can pass the files as arguments to the script
-# and use "$@" to loop over them
-for f in "$SOURCE_FOLDERS"
-do
-  # Check if the source file exists
-  if [ ! -e "$f" ]; then
-    echo "Source file '$f' does not exist."
-    continue
-  fi
-
-  # Get the basename of the file (filename without the path)
-  baseName=$(basename "$f")
-
-  fileSuffix="link"
-  fileNumber=0
-  linkName="$TARGET_FOLDER/$baseName $fileSuffix"
-
-  while [ -e "$linkName" ]; do
-    fileNumber=$((fileNumber + 1))
-    linkName="$TARGET_FOLDER/$baseName link $fileNumber"
-  done
-
-  ln -s "$f" "$linkName"
-  echo "Created symbolic link: '$linkName' -&gt; '$f'"
-done</string>
-				<key>scriptargtype</key>
-				<integer>1</integer>
-				<key>scriptfile</key>
-				<string></string>
-				<key>type</key>
-				<integer>11</integer>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.action.script</string>
-			<key>uid</key>
-			<string>0FD10229-36E1-4F12-866C-24D97540B0B2</string>
-			<key>version</key>
-			<integer>2</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
 				<key>argument</key>
 				<string></string>
 				<key>passthroughargument</key>
@@ -251,7 +251,21 @@ done</string>
 		</dict>
 	</array>
 	<key>readme</key>
-	<string></string>
+	<string># Alfred Symbolic
+
+![GitHub](https://img.shields.io/github/license/cage1016/ak)
+
+&gt; Make symlink for Alfred with ease
+
+![](screenshot.png)
+
+## Usage
+
+Pick a folder in Alfred Search and right click to choose `Make Symbolic Link` to create a symbolic link in `QSpace Pro` or `Finder` current folder.
+
+
+## License
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.</string>
 	<key>uidata</key>
 	<dict>
 		<key>0FD10229-36E1-4F12-866C-24D97540B0B2</key>
