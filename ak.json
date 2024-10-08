@@ -1,0 +1,23 @@
+{
+    "go_mod_package": "github.com/cage1015/alfred-symlink",
+    "workflow": {
+        "folder": ".workflow",
+        "name": "Alfred Symlink",
+        "description": "Make symlink for Alfred with ease",
+        "category_comment": "category: Tools, Internet, Productivity, Uncategorised",
+        "category": "Tools",
+        "bundle_id": "com.kaichu.alfred-symlink",
+        "created_by": "",
+        "web_address": "https://github.com/cage1015/alfred-symlink",
+        "version": "0.1.0"
+    },
+    "update": {
+        "github_repo": "https://github.com/cage1015/alfred-symlink"
+    },
+    "license": {
+        "type_comment": "support license https://github.com/nishanths/license",
+        "type": "mit",
+        "year": "2024",
+        "name": "KAI CHU CHUNG"
+    }
+}
